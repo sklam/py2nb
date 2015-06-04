@@ -12,8 +12,7 @@ def read(filename):
     with open(filename, 'rb') as fin:
         token_gen = tokenize.tokenize(fin.readline)
         cvt_docstr_gen = convert_toplevel_docstring(token_gen)
-        inlined_gen = inline_code_fragement(cvt_docstr_gen)
-        nl_gen = fix_newlines(inlined_gen)
+        nl_gen = fix_newlines(cvt_docstr_gen)
         out = list(nl_gen)
 
     formatted = tokenize.untokenize(out).decode('utf-8')
@@ -49,64 +48,6 @@ def convert_toplevel_docstring(tokens):
         # Return untouched
         yield token
 
-
-def inline_code_fragement(tokens):
-    got_inline_tag = False
-    got_function = False
-    got_first_indent = False
-    indent_level = None
-
-    for token in tokens:
-        if not got_inline_tag:
-            # Search for @inline tag
-            if token.type == tokenize.COMMENT:
-                text = token.string.lstrip('#').strip()
-                if text == '@inline':
-                    got_inline_tag = True
-                    # Eat it
-                    continue
-
-        elif not got_function:
-            # Modify next function definition
-            if token.type == tokenize.NAME and token.string == 'def':
-                # Got function definition
-                got_function = True
-                # Eat it
-                continue
-
-        elif not got_first_indent:
-            # Find first indent
-            if token.type == tokenize.INDENT:
-                got_first_indent = True
-                indent_level = token.end[1]
-            # Eat everyting in between
-            continue
-
-        else:
-            if token.type == tokenize.DEDENT and token.start[1] == 0:
-                # Dedent to first column
-                # Reset
-                got_inline_tag = False
-                got_function = False
-                got_first_indent = False
-                indent_level = None
-                # Eat it
-                continue
-            else:
-                string = token.string
-                if token.type == tokenize.INDENT:
-                    string = string[indent_level:]
-                start = (token.start[0], max(0, token.start[1] - indent_level))
-                end = (token.end[0], max(0, token.end[1] - indent_level))
-                token = tokenize.TokenInfo(type=token.type,
-                                           start=start,
-                                           end=end,
-                                           string=string,
-                                           line=token.line[indent_level:])
-                yield token
-                continue
-
-        yield token
 
 
 def fix_newlines(tokens):

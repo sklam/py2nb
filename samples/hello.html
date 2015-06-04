@@ -264,9 +264,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span class="k">def</span> <span class="nf">what</span><span class="p">():</span>
-    <span class="n">main</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">what</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">what</span><span class="p">():</span>
+        <span class="n">main</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">what</span><span class="p">())</span>
 </pre></div>
 
 </div>

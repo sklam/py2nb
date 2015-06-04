@@ -37,8 +37,7 @@ def main():
 ### Run this
 """
 
-# @inline
-def _code_sample():
+if __name__ == '__main__':
     def what():
         main()
     print(what())
