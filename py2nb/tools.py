@@ -10,7 +10,7 @@ from .reader import read
 
 def python_to_notebook(input_filename, output_filename):
     """
-    Convert the given python source file into a properly fomratted notebook.
+    Convert the given python source file into a properly formatted notebook.
     """
     cvt = read(input_filename)
     convert(cvt, output_filename)
