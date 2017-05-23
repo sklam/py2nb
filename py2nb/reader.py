@@ -1,6 +1,18 @@
 from __future__ import absolute_import, division, print_function
 
+import sys
+from collections import namedtuple
 import tokenize
+
+if sys.version_info[0] == 2:
+    TokenInfo = namedtuple('TokenInfo', 'type string start end line')
+
+    def _generate_tokens(readline):
+        return map(lambda x: TokenInfo(*x), tokenize.generate_tokens(readline))
+
+else:
+    TokenInfo = tokenize.TokenInfo
+    _generate_tokens = tokenize.tokenize
 
 
 def read(filename):
@@ -10,7 +22,7 @@ def read(filename):
     notebook version 3 python script format.
     """
     with open(filename, 'rb') as fin:
-        token_gen = tokenize.tokenize(fin.readline)
+        token_gen = _generate_tokens(fin.readline)
         cvt_docstr_gen = convert_toplevel_docstring(token_gen)
         nl_gen = fix_newlines(cvt_docstr_gen)
         out = list(nl_gen)
@@ -38,11 +50,11 @@ def convert_toplevel_docstring(tokens):
                              for line in text.strip('"\' \n').split('\n')]
                     text = '\n'.join(lines)
                     fmt = '# <markdowncell>\n{0}\n# <codecell>'.format(text)
-                    yield tokenize.TokenInfo(type=tokenize.COMMENT,
-                                             start=(startline, startcol),
-                                             end=(endline, endcol),
-                                             string=fmt,
-                                             line='#')
+                    yield TokenInfo(type=tokenize.COMMENT,
+                                    start=(startline, startcol),
+                                    end=(endline, endcol),
+                                    string=fmt,
+                                    line='#')
                     # To next token
                     continue
         # Return untouched
@@ -60,11 +72,11 @@ def fix_newlines(tokens):
         else:
             # Fill NEWLINE token in between
             while curline < token.start[0]:
-                yield tokenize.TokenInfo(type=tokenize.NEWLINE,
-                                         string='\n',
-                                         start=(curline, 0),
-                                         end=(curline, 0),
-                                         line='\n', )
+                yield TokenInfo(type=tokenize.NEWLINE,
+                                string='\n',
+                                start=(curline, 0),
+                                end=(curline, 0),
+                                line='\n', )
                 curline += 1
 
             curline = token.end[0] + 1
