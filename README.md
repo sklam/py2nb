@@ -1,3 +1,7 @@
+# Warning: This is unmaintain
+
+I do not have the bandwidth to maintain this project.  If you are interested, please feel free to fork and modify.
+
 # PY2NB: Python To Notebook Converter
 
 This is a small utility for turning python scripts into jupyter notebooks and
